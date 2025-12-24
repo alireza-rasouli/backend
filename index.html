@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPN Proxy Merger</title>
+    <title>Clash-Meta preferred config generator</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -34,7 +34,7 @@
 <div class="card">
     <i data-lucide="refresh-cw" style="width: 40px; height: 40px; color: var(--primary); margin: 0 auto;"></i>
     <h1 style="margin: 10px 0;">Proxy Merger</h1>
-    <p style="color: #64748b; margin-bottom: 20px;">Paste source YAML link to merge with LL.yaml</p>
+    <p style="color: #64748b; margin-bottom: 20px;">Paste source YAML link</p>
 
     <div class="input-group">
         <input type="text" id="subUrl" placeholder="https://raw.githubusercontent.com/.../nodes.yaml">
@@ -42,7 +42,7 @@
     </div>
 
     <button class="btn-primary" onclick="processYaml()" id="processBtn">
-        <i data-lucide="zap"></i> <span id="btnText">Process & Merge</span>
+        <i data-lucide="zap"></i> <span id="btnText">Process</span>
     </button>
     <div id="statusMsg" class="status-msg"></div>
 
