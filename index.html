@@ -147,9 +147,13 @@
         navigator.clipboard.writeText(input.value);
     }
 
+ // This will make the QR code point to your Panel URL
     const qrcode = new QRCode(document.getElementById("qrcode"), {
-        text: "Waiting for data...",
-        width: 256, height: 256
+        text: window.location.href, // Points to your website link
+        width: 256, 
+        height: 256,
+        colorDark : "#0f172a",
+        colorLight : "#ffffff",
     });
 
     function showQR() {
