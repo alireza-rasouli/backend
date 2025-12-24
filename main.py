@@ -1,11 +1,21 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"status": "success", "message": "Backend is live on Render!"}
+# This is CRITICAL for your GitHub Pages panel to talk to Render
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
+class LinkRequest(BaseModel):
+    url: str
+
+@app.post("/process")
+async def process_link(request: LinkRequest):
+    # This is the logic that returns your result
+    return {"output": f"Result for {request.url}"}
