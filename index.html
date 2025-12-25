@@ -20,7 +20,7 @@
             --border: #e2e8f0;
             --code-bg: #0f172a;
             --code-text: #94a3b8;
-            --gradient: radial-gradient(at 0% 0%, hsla(225, 39%, 30%, 0.05) 0, transparent 50%);
+            --gradient: radial-gradient(at 0% 0%, hsla(225, 39%, 30%, 0.1) 0, transparent 50%);
         }
 
         [data-theme="dark"] {
@@ -32,7 +32,7 @@
             --border: #334155;
             --code-bg: #020617;
             --code-text: #cbd5e1;
-            --gradient: radial-gradient(at 0% 0%, hsla(225, 39%, 50%, 0.1) 0, transparent 50%);
+            --gradient: radial-gradient(at 0% 0%, hsla(225, 39%, 50%, 0.15) 0, transparent 50%);
         }
 
         body { 
@@ -41,7 +41,7 @@
             background-image: var(--gradient);
             color: var(--text); 
             display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px;
-            transition: background 0.3s, color 0.3s;
+            transition: background 0.4s ease, color 0.4s ease;
         }
 
         .card { 
@@ -55,13 +55,12 @@
         .theme-toggle {
             position: fixed; top: 20px; right: 20px;
             background: var(--card-bg); border: 1px solid var(--border);
-            width: 48px; height: 48px; border-radius: 12px;
+            width: 48px; height: 48px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            color: var(--text); transition: all 0.2s; z-index: 1000;
+            cursor: pointer; color: var(--text); transition: all 0.2s; z-index: 2000;
         }
-        
-        .theme-toggle:hover { transform: scale(1.05); border-color: var(--primary); }
+        .theme-toggle:hover { transform: rotate(15deg) scale(1.1); border-color: var(--primary); }
+        .theme-toggle svg { width: 22px; height: 22px; stroke-width: 2.5px; }
 
         .input-group { 
             background: var(--input-bg); border: 1px solid var(--border);
@@ -77,29 +76,28 @@
         }
 
         .btn-primary { background: var(--primary); color: white; width: 100%; }
-        .btn-primary:hover { background: var(--primary-hover); }
         .btn-success { background: var(--success); color: white; width: 100%; margin-top: 10px; display: none; }
         .btn-copy { background: var(--input-bg); color: var(--subtext); border: 1px solid var(--border); }
 
-        /* FIXED: Result container hidden by default */
+        /* FIXED: Result Preview hidden by default */
         #resultContainer { margin-top: 1.5rem; display: none; text-align: left; }
 
         textarea { 
             width: 100%; height: 180px; border-radius: 0.75rem; border: 1px solid var(--border); 
-            font-family: monospace; font-size: 11px; padding: 12px; margin-top: 8px;
+            font-family: 'Courier New', monospace; font-size: 11px; padding: 12px; margin-top: 8px;
             background: var(--code-bg); color: var(--code-text); resize: vertical;
         }
         
-        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; z-index: 1000; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);}
+        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; z-index: 3000; }
         [data-theme="dark"] #qrModal { background: #1e293b; }
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; }
-        .status-msg { font-size: 0.85rem; color: var(--primary); margin-top: 8px; font-weight: 500; min-height: 20px;}
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2500; }
+        .status-msg { font-size: 0.85rem; color: var(--primary); margin-top: 12px; font-weight: 600; min-height: 20px;}
     </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
-    <i id="themeIcon"></i>
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Switch Theme">
+    <i data-lucide="moon"></i>
 </button>
 
 <div class="card">
@@ -144,12 +142,12 @@
     let processedYamlData = "";
     let qrcode = null;
 
-    // Robust Theme Logic
-    function updateUI(theme) {
-        const iconElement = document.getElementById('themeIcon');
-        // We set the name attribute for Lucide
-        iconElement.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
-        // Re-run Lucide to swap the <i> for the <svg>
+    // IMPROVED: Fixed Theme Icon Swap Logic
+    function updateThemeIcon(theme) {
+        const btn = document.getElementById('themeBtn');
+        // We completely overwrite the inner HTML to force Lucide to start fresh
+        const iconName = theme === 'dark' ? 'sun' : 'moon';
+        btn.innerHTML = `<i data-lucide="${iconName}"></i>`;
         lucide.createIcons();
     }
 
@@ -160,21 +158,17 @@
         
         html.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
-        updateUI(newTheme);
+        updateThemeIcon(newTheme);
     }
 
     window.onload = () => {
-        // Load Saved Theme
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        
-        // Initial icon render
-        updateUI(savedTheme);
+        updateThemeIcon(savedTheme);
 
-        // Pre-warm server
+        // Pre-warm the Render server
         fetch("https://backend-bclt.onrender.com/").catch(() => {});
         
-        // Initialize QR
         qrcode = new QRCode(document.getElementById("qrcode"), {
             width: 256,
             height: 256,
@@ -207,11 +201,12 @@
             const data = await response.json();
             processedYamlData = data.output;
             
-            // Populate and Show Result
+            // Populate and Show Result only when data exists
             document.getElementById("resultPreview").value = processedYamlData;
             document.getElementById("resultContainer").style.display = "block";
             document.getElementById("downloadBtn").style.display = "flex";
             statusMsg.innerText = "Merge Successful!";
+            lucide.createIcons(); // Ensure download icon appears
         } catch (error) {
             statusMsg.innerText = "Error. Server starting... Try again.";
         } finally {
@@ -250,9 +245,9 @@
         input.select();
         navigator.clipboard.writeText(input.value).then(() => {
             const status = document.getElementById("statusMsg");
-            const oldMsg = status.innerText;
-            status.innerText = "URL Copied to clipboard!";
-            setTimeout(() => status.innerText = oldMsg, 2000);
+            const original = status.innerText;
+            status.innerText = "✅ URL Copied!";
+            setTimeout(() => status.innerText = original, 2000);
         });
     }
 </script>
