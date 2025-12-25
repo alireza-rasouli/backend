@@ -3,138 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoConfig</title>
+    <title>🔧 AutoConfig</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-       :root { 
-    --primary: #2563eb; 
-    --primary-hover: #1d4ed8;
-    --success: #059669; 
-    --bg: #f1f5f9; 
-    --text: #0f172a; 
-    --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-}
+        :root { 
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --success: #059669; 
+            --bg: #f1f5f9; 
+            --text: #0f172a; 
+            --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
 
-body { 
-    font-family: 'Inter', -apple-system, sans-serif; 
-    background-color: var(--bg);
-    background-image: radial-gradient(at 0% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-                      radial-gradient(at 50% 0%, hsla(225,39%,23%,1) 0, transparent 50%);
-    color: var(--text); 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    min-height: 100vh; 
-    margin: 0; 
-    padding: 20px; 
-}
+        body { 
+            font-family: -apple-system, system-ui, sans-serif; 
+            background-color: var(--bg);
+            background-image: radial-gradient(at 0% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                              radial-gradient(at 50% 0%, hsla(225,39%,23%,1) 0, transparent 50%);
+            color: var(--text); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+        }
 
-.card { 
-    background: rgba(255, 255, 255, 0.95); 
-    backdrop-filter: blur(10px);
-    padding: 2.5rem; 
-    border-radius: 1.5rem; 
-    box-shadow: var(--card-shadow); 
-    width: 100%; 
-    max-width: 480px; 
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
+        .card { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            padding: 2.5rem; 
+            border-radius: 1.5rem; 
+            box-shadow: var(--card-shadow); 
+            width: 100%; 
+            max-width: 480px; 
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
 
-h1 { font-size: 1.875rem; font-weight: 800; letter-spacing: -0.025em; }
+        .input-group { 
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 4px;
+            display: flex; 
+            gap: 0.5rem; 
+            margin: 1.5rem 0 0.5rem 0; 
+            transition: all 0.2s;
+        }
 
-.input-group { 
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
-    padding: 4px;
-    display: flex; 
-    gap: 0.5rem; 
-    margin: 1.5rem 0 0.5rem 0; 
-    transition: all 0.2s;
-}
+        .input-group:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
 
-.input-group:focus-within {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
+        input { 
+            flex: 1; 
+            padding: 0.6rem 0.75rem; 
+            border: none; 
+            outline: none;
+            font-size: 0.95rem;
+        }
 
-input { 
-    flex: 1; 
-    padding: 0.6rem 0.75rem; 
-    border: none; 
-    outline: none;
-    font-size: 0.95rem;
-}
+        button { 
+            padding: 0.75rem 1.5rem; 
+            border-radius: 0.75rem; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+        }
 
-button { 
-    padding: 0.75rem 1.5rem; 
-    border-radius: 0.75rem; 
-    border: none; 
-    cursor: pointer; 
-    font-weight: 600; 
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 8px; 
-}
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
 
-.btn-primary { background: var(--primary); color: white; width: 100%; }
-.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-.btn-primary:active { transform: translateY(0px); }
+        .btn-success { background: var(--success); color: white; width: 100%; margin-top: 10px; display: none; }
 
-.btn-success { background: var(--success); color: white; width: 100%; margin-top: 10px; display: none; }
+        .btn-copy { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
 
-.btn-copy { 
-    background: #f8fafc; 
-    color: #64748b; 
-    border: 1px solid #e2e8f0;
-}
-.btn-copy:hover { background: #f1f5f9; color: var(--text); }
+        #resultContainer { margin-top: 1.5rem; display: none; text-align: left; }
 
-textarea { 
-    width: 100%; 
-    height: 180px; 
-    border-radius: 0.75rem; 
-    border: 1px solid #e2e8f0; 
-    font-family: 'Fira Code', monospace; 
-    font-size: 11px; 
-    padding: 12px; 
-    margin-top: 8px;
-    background: #0f172a;
-    color: #94a3b8;
-}
-
-/* Status Message Animation */
-.status-msg { 
-    font-size: 0.85rem; 
-    font-weight: 500;
-    color: var(--primary); 
-    margin-top: 10px; 
-    min-height: 20px;
-    transition: all 0.3s;
-}
+        textarea { 
+            width: 100%; 
+            height: 180px; 
+            border-radius: 0.75rem; 
+            border: 1px solid #e2e8f0; 
+            font-family: monospace; 
+            font-size: 11px; 
+            padding: 12px; 
+            margin-top: 8px;
+            background: #0f172a;
+            color: #94a3b8;
+            resize: vertical;
+        }
+        
+        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; z-index: 100; box-shadow: var(--card-shadow); }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 50; }
+        .status-msg { font-size: 0.85rem; color: var(--primary); margin-top: 5px; min-height: 20px; font-weight: 500; }
     </style>
 </head>
 <body>
 
 <div class="card">
     <div style="background: rgba(37, 99, 235, 0.1); width: 64px; height: 64px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
-    <i data-lucide="cpu" style="width: 32px; height: 32px; color: var(--primary);"></i>
+        <i data-lucide="cpu" style="width: 32px; height: 32px; color: var(--primary);"></i>
     </div>
-    <h1 style="margin: 10px 0;">Config Generator</h1>
-    <p style="color: #64748b; margin-bottom: 20px;">Paste source YAML link</p>
+    <h1 style="margin: 15px 0 5px 0;">Config Generator</h1>
+    <p style="color: #64748b; margin-bottom: 20px; font-size: 0.9rem;">Paste source YAML link</p>
 
     <div class="input-group">
         <input type="text" id="subUrl" placeholder="https://raw.githubusercontent.com/.../nodes.yaml">
-        <button class="btn-copy" onclick="copyInput()" title="Copy Input"><i data-lucide="copy"></i></button>
+        <button class="btn-copy" onclick="copyInput()" title="Copy Input"><i data-lucide="copy" style="width:18px"></i></button>
     </div>
 
     <button class="btn-primary" onclick="processYaml()" id="processBtn">
-        <i data-lucide="zap"></i> <span id="btnText">Process</span>
+        <i data-lucide="zap" style="width:18px"></i> <span id="btnText">Process</span>
     </button>
     <div id="statusMsg" class="status-msg"></div>
 
@@ -143,11 +132,11 @@ textarea {
         <textarea id="resultPreview" readonly></textarea>
         
         <button class="btn-success" id="downloadBtn" onclick="downloadFile()">
-            <i data-lucide="download"></i> Download test.yaml
+            <i data-lucide="download" style="width:18px"></i> Download test.yaml
         </button>
         
         <div style="display: flex; justify-content: center; margin-top: 15px;">
-            <button class="btn-copy" onclick="showQR()"><i data-lucide="qr-code"></i> View QR</button>
+            <button class="btn-copy" onclick="showQR()"><i data-lucide="qr-code" style="width:18px"></i> View QR</button>
         </div>
     </div>
 </div>
@@ -163,10 +152,18 @@ textarea {
 
     const RENDER_API = "https://backend-bclt.onrender.com/process";
     let processedYamlData = "";
+    let qrcode = null;
 
     // 1. Wake up server on page load
     window.onload = () => {
         fetch("https://backend-bclt.onrender.com/").catch(() => {});
+        // Initialize QR object once, but don't show it
+        qrcode = new QRCode(document.getElementById("qrcode"), {
+            width: 256,
+            height: 256,
+            colorDark : "#0f172a",
+            colorLight : "#ffffff",
+        });
     };
 
     // 2. Main Process Function
@@ -179,7 +176,7 @@ textarea {
         if (!urlInput) return alert("Please paste a source URL first!");
 
         btn.disabled = true;
-        statusMsg.innerText = "Waking up Render server (30-60s)...";
+        statusMsg.innerText = "⚡ Waking engine...";
         btnText.innerText = "Processing...";
 
         try {
@@ -202,18 +199,14 @@ textarea {
                 document.getElementById("resultContainer").style.display = "block";
                 document.getElementById("downloadBtn").style.display = "flex";
                 statusMsg.innerText = "Merge Successful!";
-                
-                // Update QR Code
-                qrcode.clear();
-                qrcode.makeCode(processedYamlData.substring(0, 1000)); // Limit size for QR
             }
 
         } catch (error) {
             console.error(error);
-            statusMsg.innerText = "Error. Server may still be starting up. Try again.";
+            statusMsg.innerText = "Error. Server starting... Try again.";
         } finally {
             btn.disabled = false;
-            btnText.innerText = "Process & Merge";
+            btnText.innerText = "Process";
         }
     }
 
@@ -231,23 +224,10 @@ textarea {
         document.body.removeChild(a);
     }
 
-    // 4. Utility Functions
-    function copyInput() {
-        const input = document.getElementById("subUrl");
-        input.select();
-        navigator.clipboard.writeText(input.value);
-    }
-
- // This will make the QR code point to your Panel URL
-    const qrcode = new QRCode(document.getElementById("qrcode"), {
-        text: window.location.href, // Points to your website link
-        width: 256, 
-        height: 256,
-        colorDark : "#0f172a",
-        colorLight : "#ffffff",
-    });
-
+    // 4. QR and Utility
     function showQR() {
+        qrcode.clear();
+        qrcode.makeCode(window.location.href);
         document.getElementById("qrModal").style.display = "block";
         document.getElementById("overlay").style.display = "block";
     }
@@ -255,6 +235,12 @@ textarea {
     function closeQR() {
         document.getElementById("qrModal").style.display = "none";
         document.getElementById("overlay").style.display = "none";
+    }
+
+    function copyInput() {
+        const input = document.getElementById("subUrl");
+        input.select();
+        navigator.clipboard.writeText(input.value);
     }
 </script>
 
