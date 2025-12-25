@@ -12,15 +12,15 @@
             --primary: #2563eb; 
             --primary-hover: #1d4ed8;
             --success: #059669; 
-            --bg: #f1f5f9; 
+            --bg: #f8fafc; 
             --card-bg: rgba(255, 255, 255, 0.95);
-            --text: #0f172a; 
+            --text: #1e293b; 
             --subtext: #64748b;
-            --input-bg: #fff;
+            --input-bg: #ffffff;
             --border: #e2e8f0;
             --code-bg: #0f172a;
             --code-text: #94a3b8;
-            --gradient-start: hsla(225, 39%, 30%, 0.1);
+            --gradient: radial-gradient(at 0% 0%, hsla(225, 39%, 30%, 0.05) 0, transparent 50%);
         }
 
         [data-theme="dark"] {
@@ -32,62 +32,54 @@
             --border: #334155;
             --code-bg: #020617;
             --code-text: #cbd5e1;
-            --gradient-start: hsla(225, 39%, 50%, 0.15);
+            --gradient: radial-gradient(at 0% 0%, hsla(225, 39%, 50%, 0.1) 0, transparent 50%);
         }
 
         body { 
             font-family: -apple-system, system-ui, sans-serif; 
             background-color: var(--bg);
-            /* Restored Gradient */
-            background-image: 
-                radial-gradient(at 0% 0%, var(--gradient-start) 0, transparent 50%),
-                radial-gradient(at 100% 100%, var(--gradient-start) 0, transparent 50%);
+            background-image: var(--gradient);
             color: var(--text); 
             display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background 0.3s, color 0.3s;
         }
 
         .card { 
             background: var(--card-bg); 
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             padding: 2.5rem; border-radius: 1.5rem; width: 100%; max-width: 480px; text-align: center;
             border: 1px solid var(--border);
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
         }
 
+        /* Themed Toggle Button */
         .theme-toggle {
             position: fixed; top: 20px; right: 20px;
             background: var(--card-bg); border: 1px solid var(--border);
-            width: 45px; height: 45px; border-radius: 50%;
+            width: 48px; height: 48px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            color: var(--text); transition: 0.2s; z-index: 1000;
+            color: var(--text); transition: all 0.2s; z-index: 1000;
         }
-
-        .theme-toggle:hover { transform: scale(1.1); }
+        .theme-toggle:hover { transform: scale(1.05); border-color: var(--primary); }
 
         .input-group { 
             background: var(--input-bg); border: 1px solid var(--border);
             border-radius: 0.75rem; padding: 4px; display: flex; gap: 0.5rem; margin: 1.5rem 0 0.5rem 0; 
-            transition: 0.2s;
         }
 
         input { flex: 1; padding: 0.6rem 0.75rem; border: none; outline: none; background: transparent; color: var(--text); font-size: 0.95rem; }
 
         button { 
             padding: 0.75rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer; 
-            font-weight: 600; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            font-weight: 600; transition: all 0.2s; 
             display: flex; align-items: center; justify-content: center; gap: 8px; 
         }
 
         .btn-primary { background: var(--primary); color: white; width: 100%; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-
+        .btn-primary:hover { background: var(--primary-hover); }
         .btn-success { background: var(--success); color: white; width: 100%; margin-top: 10px; display: none; }
-
         .btn-copy { background: var(--input-bg); color: var(--subtext); border: 1px solid var(--border); }
-
-        #resultContainer { margin-top: 1.5rem; display: none; text-align: left; }
 
         textarea { 
             width: 100%; height: 180px; border-radius: 0.75rem; border: 1px solid var(--border); 
@@ -95,20 +87,20 @@
             background: var(--code-bg); color: var(--code-text); resize: vertical;
         }
         
-        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; z-index: 100; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
-        [data-theme="dark"] #qrModal { background: #1e293b; color: white; }
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 50; }
-        .status-msg { font-size: 0.85rem; color: var(--primary); margin-top: 8px; min-height: 20px; font-weight: 500; }
+        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; z-index: 1000; }
+        [data-theme="dark"] #qrModal { background: #1e293b; }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; }
+        .status-msg { font-size: 0.85rem; color: var(--primary); margin-top: 8px; font-weight: 500; }
     </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
     <i id="themeIcon" data-lucide="moon"></i>
 </button>
 
 <div class="card">
-    <div style="background: rgba(37, 99, 235, 0.1); width: 64px; height: 64px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+    <div style="background: rgba(37, 99, 235, 0.1); width: 64px; height: 64px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
         <i data-lucide="cpu" style="width: 32px; height: 32px; color: var(--primary);"></i>
     </div>
     <h1 style="margin: 15px 0 5px 0;">Config Generator</h1>
@@ -149,17 +141,7 @@
     let processedYamlData = "";
     let qrcode = null;
 
-    // Fixed Theme Icon Logic
-    function updateThemeIcon(theme) {
-        const iconElement = document.getElementById('themeIcon');
-        if (theme === 'dark') {
-            iconElement.setAttribute('data-lucide', 'sun');
-        } else {
-            iconElement.setAttribute('data-lucide', 'moon');
-        }
-        lucide.createIcons();
-    }
-
+    // Fixed Icon and Theme Sync
     function toggleTheme() {
         const html = document.documentElement;
         const currentTheme = html.getAttribute('data-theme');
@@ -167,16 +149,19 @@
         
         html.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme);
+        updateUI(newTheme);
+    }
+
+    function updateUI(theme) {
+        const icon = document.getElementById('themeIcon');
+        icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+        lucide.createIcons(); // This re-renders icons for the whole page
     }
 
     window.onload = () => {
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        
-        // Load icons first
-        lucide.createIcons();
-        updateThemeIcon(savedTheme);
+        updateUI(savedTheme);
 
         fetch("https://backend-bclt.onrender.com/").catch(() => {});
         qrcode = new QRCode(document.getElementById("qrcode"), {
@@ -209,20 +194,12 @@
             if (!response.ok) throw new Error("Server Error");
 
             const data = await response.json();
-            
-            if (data.output.startsWith("Error") || data.output.startsWith("Backend Error")) {
-                alert(data.output);
-                statusMsg.innerText = "Processing failed.";
-            } else {
-                processedYamlData = data.output;
-                document.getElementById("resultPreview").value = processedYamlData;
-                document.getElementById("resultContainer").style.display = "block";
-                document.getElementById("downloadBtn").style.display = "flex";
-                statusMsg.innerText = "Merge Successful!";
-            }
-
+            processedYamlData = data.output;
+            document.getElementById("resultPreview").value = processedYamlData;
+            document.getElementById("resultContainer").style.display = "block";
+            document.getElementById("downloadBtn").style.display = "flex";
+            statusMsg.innerText = "Merge Successful!";
         } catch (error) {
-            console.error(error);
             statusMsg.innerText = "Error. Server starting... Try again.";
         } finally {
             btn.disabled = false;
@@ -258,7 +235,11 @@
     function copyInput() {
         const input = document.getElementById("subUrl");
         input.select();
-        navigator.clipboard.writeText(input.value);
+        navigator.clipboard.writeText(input.value).then(() => {
+            const status = document.getElementById("statusMsg");
+            status.innerText = "URL Copied to clipboard!";
+            setTimeout(() => status.innerText = "", 2000);
+        });
     }
 </script>
 
