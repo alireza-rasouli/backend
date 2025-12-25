@@ -20,7 +20,6 @@
             --border: #e2e8f0;
             --code-bg: #0f172a;
             --code-text: #94a3b8;
-            --gradient: radial-gradient(at 0% 0%, hsla(225, 39%, 30%, 0.1) 0, transparent 50%);
         }
 
         [data-theme="dark"] {
@@ -32,16 +31,15 @@
             --border: #334155;
             --code-bg: #020617;
             --code-text: #cbd5e1;
-            --gradient: radial-gradient(at 0% 0%, hsla(225, 39%, 50%, 0.15) 0, transparent 50%);
         }
 
         body { 
             font-family: -apple-system, system-ui, sans-serif; 
             background-color: var(--bg);
-            background-image: var(--gradient);
+            background-image: radial-gradient(at 0% 0%, hsla(225, 39%, 30%, 0.1) 0, transparent 50%);
             color: var(--text); 
             display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px;
-            transition: background 0.4s ease, color 0.4s ease;
+            transition: background 0.4s ease;
         }
 
         .card { 
@@ -52,15 +50,24 @@
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
         }
 
+        /* FIXED THEME TOGGLE CSS */
         .theme-toggle {
             position: fixed; top: 20px; right: 20px;
             background: var(--card-bg); border: 1px solid var(--border);
-            width: 48px; height: 48px; border-radius: 50%;
+            width: 48px; height: 48px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--text); transition: all 0.2s; z-index: 2000;
+            cursor: pointer; color: var(--text); z-index: 2000;
         }
-        .theme-toggle:hover { transform: rotate(15deg) scale(1.1); border-color: var(--primary); }
-        .theme-toggle svg { width: 22px; height: 22px; stroke-width: 2.5px; }
+
+        /* FORCING SVG VISIBILITY */
+        .theme-toggle svg { 
+            display: block !important;
+            width: 24px !important; 
+            height: 24px !important; 
+            min-width: 24px !important;
+            min-height: 24px !important;
+            stroke-width: 2px;
+        }
 
         .input-group { 
             background: var(--input-bg); border: 1px solid var(--border);
@@ -79,26 +86,23 @@
         .btn-success { background: var(--success); color: white; width: 100%; margin-top: 10px; display: none; }
         .btn-copy { background: var(--input-bg); color: var(--subtext); border: 1px solid var(--border); }
 
-        /* FIXED: Result Preview hidden by default */
         #resultContainer { margin-top: 1.5rem; display: none; text-align: left; }
 
         textarea { 
             width: 100%; height: 180px; border-radius: 0.75rem; border: 1px solid var(--border); 
-            font-family: 'Courier New', monospace; font-size: 11px; padding: 12px; margin-top: 8px;
+            font-family: monospace; font-size: 11px; padding: 12px; margin-top: 8px;
             background: var(--code-bg); color: var(--code-text); resize: vertical;
         }
         
-        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; z-index: 3000; }
-        [data-theme="dark"] #qrModal { background: #1e293b; }
+        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 1rem; z-index: 3000; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        [data-theme="dark"] #qrModal { background: #1e293b; color: white; }
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2500; }
-        .status-msg { font-size: 0.85rem; color: var(--primary); margin-top: 12px; font-weight: 600; min-height: 20px;}
+        .status-msg { font-size: 0.85rem; color: var(--primary); margin-top: 8px; font-weight: 600; min-height: 20px;}
     </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Switch Theme">
-    <i data-lucide="moon"></i>
-</button>
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle Theme"></button>
 
 <div class="card">
     <div style="background: rgba(37, 99, 235, 0.1); width: 64px; height: 64px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
@@ -142,32 +146,29 @@
     let processedYamlData = "";
     let qrcode = null;
 
-    // IMPROVED: Fixed Theme Icon Swap Logic
-    function updateThemeIcon(theme) {
+    // Direct SVGs to bypass any library loading issues
+    const moonSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>`;
+    const sunSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>`;
+
+    function updateThemeUI(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
         const btn = document.getElementById('themeBtn');
-        // We completely overwrite the inner HTML to force Lucide to start fresh
-        const iconName = theme === 'dark' ? 'sun' : 'moon';
-        btn.innerHTML = `<i data-lucide="${iconName}"></i>`;
-        lucide.createIcons();
+        btn.innerHTML = theme === 'dark' ? sunSvg : moonSvg;
     }
 
     function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute('data-theme') || 'light';
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        
-        html.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme);
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', next);
+        updateThemeUI(next);
     }
 
     window.onload = () => {
         const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        updateThemeIcon(savedTheme);
+        updateThemeUI(savedTheme);
 
-        // Pre-warm the Render server
         fetch("https://backend-bclt.onrender.com/").catch(() => {});
+        lucide.createIcons(); // For the other icons in the card
         
         qrcode = new QRCode(document.getElementById("qrcode"), {
             width: 256,
@@ -179,13 +180,12 @@
 
     async function processYaml() {
         const urlInput = document.getElementById("subUrl").value;
-        const btnText = document.getElementById("btnText");
         const statusMsg = document.getElementById("statusMsg");
-        const btn = document.getElementById("processBtn");
+        const btnText = document.getElementById("btnText");
 
         if (!urlInput) return alert("Please paste a source URL first!");
 
-        btn.disabled = true;
+        document.getElementById("processBtn").disabled = true;
         statusMsg.innerText = "⚡ Waking engine...";
         btnText.innerText = "Processing...";
 
@@ -196,21 +196,18 @@
                 body: JSON.stringify({ url: urlInput })
             });
 
-            if (!response.ok) throw new Error("Server Error");
-
             const data = await response.json();
             processedYamlData = data.output;
             
-            // Populate and Show Result only when data exists
             document.getElementById("resultPreview").value = processedYamlData;
             document.getElementById("resultContainer").style.display = "block";
             document.getElementById("downloadBtn").style.display = "flex";
             statusMsg.innerText = "Merge Successful!";
-            lucide.createIcons(); // Ensure download icon appears
+            lucide.createIcons();
         } catch (error) {
             statusMsg.innerText = "Error. Server starting... Try again.";
         } finally {
-            btn.disabled = false;
+            document.getElementById("processBtn").disabled = false;
             btnText.innerText = "Process";
         }
     }
@@ -222,10 +219,7 @@
         const a = document.createElement('a');
         a.href = url;
         a.download = "test.yaml";
-        document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
     }
 
     function showQR() {
@@ -245,9 +239,9 @@
         input.select();
         navigator.clipboard.writeText(input.value).then(() => {
             const status = document.getElementById("statusMsg");
-            const original = status.innerText;
+            const old = status.innerText;
             status.innerText = "✅ URL Copied!";
-            setTimeout(() => status.innerText = original, 2000);
+            setTimeout(() => status.innerText = old, 2000);
         });
     }
 </script>
