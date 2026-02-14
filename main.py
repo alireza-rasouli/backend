@@ -67,18 +67,26 @@ async def process_vpn_logic(request: LinkRequest):
         my_config['proxies'] = all_new_proxies
 
         # 4. Update Proxy Groups (Your exact automate.py logic)
+        # 4. Update Proxy Groups (Corrected Logic)
         if 'proxy-groups' in my_config:
-            # Create a list of valid static names to preserve
             group_names = [g['name'] for g in my_config['proxy-groups']]
             special_tags = ['DIRECT', 'REJECT', 'GLOBAL']
             valid_static = special_tags + group_names
 
             for group in my_config['proxy-groups']:
                 if 'proxies' in group:
-                    # Keep only the static tags/groups that existed before
+                    # 1. Get the items that were already in this specific group in ll.yaml
                     preserved = [p for p in group['proxies'] if p in valid_static]
-                    # Append all the new dynamic proxy names
-                    group['proxies'] = preserved + new_names
+                    
+                    # 2. DECIDE: Should this group get the 100+ new proxies?
+                    # Usually, you only want new proxies in groups that have a placeholder like 'all' 
+                    # or if the group is your main selector.
+                    if 'all' in group['proxies'] or group['name'] == 'Proxy': 
+                        # This replaces the 'all' placeholder with the actual list
+                        group['proxies'] = preserved + new_names
+                    else:
+                        # This keeps the group exactly as it was in ll.yaml
+                        group['proxies'] = preserved
 
         # 5. Generate clean, multi-line YAML output
         # indent=2 and default_flow_style=False ensures it looks like a real file
