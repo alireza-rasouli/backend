@@ -66,35 +66,38 @@ async def process_vpn_logic(request: LinkRequest):
         # 3. Inject gathered proxies into the config
         my_config['proxies'] = all_new_proxies
 
-        # 4. Update Proxy Groups (Dynamic Type-Based Logic)
+        # 4. Update Proxy Groups (Content-Aware Logic)
         if 'proxy-groups' in my_config:
-            # 1. Identify all static group names to keep them as valid references
+            # 1. Map out what is a "System" name (Groups and Tags)
             group_names = [g['name'] for g in my_config['proxy-groups']]
             special_tags = ['DIRECT', 'REJECT', 'GLOBAL']
-            valid_static = special_tags + group_names
+            system_names = set(special_tags + group_names)
 
             for group in my_config['proxy-groups']:
                 if 'proxies' in group:
-                    # 2. Start by keeping existing static tags/group names from LL.yaml
-                    # This ensures things like 'DIRECT' stay in the group.
-                    preserved = [p for p in group['proxies'] if p in valid_static]
+                    # 2. Check the content of the current group in LL.yaml
+                    original_list = group['proxies']
+                    
+                    # 3. Logic: Does this group contain "Real Proxies"?
+                    # We assume it's a proxy if the name isn't a Group or a Special Tag.
+                    contains_proxies = any(p for p in original_list if p not in system_names)
+                    
+                    # Also check for empty list or url-test as a fallback
+                    is_auto = group.get('type') == 'url-test'
+                    
+                    # 4. Clean up and preserve the System names (DIRECT, etc.)
+                    preserved = [p for p in original_list if p in system_names]
 
-                    # 3. Decide if this group should be "Auto-Populated" with your 100+ proxies
-                    # We check: Is it a 'url-test' type? OR is it named 'Proxy'?
-                    is_auto_group = group.get('type') == 'url-test'
-                    is_main_selector = group.get('type') == 'select' and group['name'] == 'Proxy'
-
-                    if is_auto_group or is_main_selector:
-                        # For 'url-test' (Auto) groups, we usually don't want 'DIRECT' 
-                        # because you can't speed-test a direct connection.
-                        if is_auto_group:
-                            # Filter out 'DIRECT' if it accidentally stayed in 'preserved'
+                    if contains_proxies or is_auto or len(original_list) == 0:
+                        # This group is "Active" - populate it!
+                        if is_auto:
+                            # Filter DIRECT out of Auto groups
                             preserved = [p for p in preserved if p != 'DIRECT']
                         
                         group['proxies'] = preserved + new_names
                     else:
-                        # For all other groups, just keep what you manually put in LL.yaml
-                        group['proxies'] = preserved
+                        # This group is "Manual/Static" - leave it exactly as it is
+                        group['proxies'] = original_list
         # 5. Generate clean, multi-line YAML output
         # indent=2 and default_flow_style=False ensures it looks like a real file
         final_yaml = yaml.dump(
